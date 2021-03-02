@@ -52,3 +52,6 @@ add_subdirectory("jetsam")
 
 # Mucking about.
 add_subdirectory("test")
+
+# Shaders
+add_subdirectory("shaders")
