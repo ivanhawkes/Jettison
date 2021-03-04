@@ -13,8 +13,8 @@ find_package(Vulkan REQUIRED)
 #target_link_libraries(shaders PRIVATE Vulkan::Vulkan)
 
 # Copy shaders, models and the textures.
-#configure_file("shader.vert.spv" "shaders/shader.vert.spv" COPYONLY)
-#configure_file("shader.frag.spv" "shaders/shader.frag.spv" COPYONLY)
+configure_file("shader.vert.spv" "shaders/shader.vert.spv" COPYONLY)
+configure_file("shader.frag.spv" "shaders/shader.frag.spv" COPYONLY)
 
 
 function(target_target_add_spirv_shader TARGET INPUT_FILE)
@@ -77,8 +77,8 @@ function(target_add_spirv_shader SHADER_STAGE INPUT_FILE)
     #add_dependencies(${TARGET} ${bare_name}${extension})
 endfunction()
 
-target_add_spirv_shader(vert simple-vert.vert)
-target_add_spirv_shader(fragment simple-fragment.frag)
+#target_add_spirv_shader(vert simple-vert.vert)
+#target_add_spirv_shader(fragment simple-fragment.frag)
 
 #add_custom_target(shaders ALL DEPENDS simple-vert.spv)
 #add_custom_target(shaders ALL DEPENDS simple-fragment.spv)
