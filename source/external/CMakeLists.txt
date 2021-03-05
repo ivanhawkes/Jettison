@@ -1,4 +1,4 @@
-#add_compile_options(${PLASMA_C_CXX_EXTERNAL_FLAGS})
+set(JETTISON_EXTERNAL_SOURCE ${CMAKE_CURRENT_LIST_DIR})
 
 # Can bypass Boost dependancy using SKIP_PERFORMANCE_COMPARISON
 add_subdirectory("cereal")
@@ -28,6 +28,10 @@ set_property(TARGET freetype PROPERTY FOLDER "Freetype")
 
 # Not a cmake thing.
 #add_subdirectory("imgui")
+#list(APPEND IMGUI_SOURCES
+#	${CMAKE_CURRENT_LIST_DIR}/imgui/imconfig.h
+#	${CMAKE_CURRENT_LIST_DIR}/imgui/imconfig.cpp
+#	)
 
 # Warning which needs suppressing.
 add_subdirectory("zlib")

@@ -39,3 +39,7 @@ target_link_libraries(test PRIVATE stb)
 
 # Tiny Object Loader.
 target_link_libraries(test PRIVATE tiny_obj_loader)
+
+# ImGUI
+add_subdirectory("imgui")
+
