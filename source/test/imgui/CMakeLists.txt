@@ -1,5 +1,5 @@
 target_sources(test PUBLIC
-	# Implementation.
+	# ImGUI's implementations.
 	imgui_impl_glfw.cpp
 	imgui_impl_glfw.h
 	imgui_impl_vulkan.cpp

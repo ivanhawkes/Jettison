@@ -29,6 +29,11 @@
 #include <chrono>
 #include <unordered_map>
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_vulkan.h"
+
+
 constexpr uint32_t WIDTH = 1920;
 constexpr uint32_t HEIGHT = 1080;
 
@@ -137,6 +142,7 @@ public:
 	void run()
 	{
 		initWindow();
+		InitImGui();
 		initVulkan();
 		mainLoop();
 		cleanup();
@@ -151,6 +157,14 @@ private:
 		window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+	}
+
+	void InitImGui()
+	{
+		ImGui::CreateContext();
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
 	}
 
 	void initVulkan()
@@ -221,6 +235,10 @@ private:
 		vkDestroyDevice(device, nullptr);
 		vkDestroySurfaceKHR(instance, surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
+
+		ImGui_ImplVulkan_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 
 		glfwDestroyWindow(window);
 		glfwTerminate();

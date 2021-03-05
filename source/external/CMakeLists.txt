@@ -34,13 +34,14 @@ set_property(TARGET freetype PROPERTY FOLDER "Freetype")
 #	)
 
 # Warning which needs suppressing.
-add_subdirectory("zlib")
+# NOTE: I got sick of suppressing it, so zlib is out till I need it.
+#add_subdirectory("zlib")
 
 # Move the targets into a solution folder.
-set_property(TARGET example PROPERTY FOLDER "ZLib")
-set_property(TARGET zlib PROPERTY FOLDER "ZLib")
-set_property(TARGET zlibstatic PROPERTY FOLDER "ZLib")
-set_property(TARGET minigzip PROPERTY FOLDER "ZLib")
+#set_property(TARGET example PROPERTY FOLDER "ZLib")
+#set_property(TARGET zlib PROPERTY FOLDER "ZLib")
+#set_property(TARGET zlibstatic PROPERTY FOLDER "ZLib")
+#set_property(TARGET minigzip PROPERTY FOLDER "ZLib")
 
 # GL math library.
 add_subdirectory("glm")
