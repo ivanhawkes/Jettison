@@ -22,6 +22,8 @@ include_directories("external/imgui")
 # Copy shaders, models and the textures.
 configure_file("shaders/shader.vert.spv" "shaders/shader.vert.spv" COPYONLY)
 configure_file("shaders/shader.frag.spv" "shaders/shader.frag.spv" COPYONLY)
+configure_file("shaders/imgui.vert.spv" "shaders/imgui.vert.spv" COPYONLY)
+configure_file("shaders/imgui.frag.spv" "shaders/imgui.frag.spv" COPYONLY)
 configure_file("textures/texture.jpg" "textures/texture.jpg" COPYONLY)
 configure_file("textures/viking_room.png" "textures/viking_room.png" COPYONLY)
 configure_file("models/viking_room.wobj" "models/viking_room.wobj" COPYONLY)

@@ -15,6 +15,8 @@ find_package(Vulkan REQUIRED)
 # Copy shaders, models and the textures.
 configure_file("shader.vert.spv" "shaders/shader.vert.spv" COPYONLY)
 configure_file("shader.frag.spv" "shaders/shader.frag.spv" COPYONLY)
+configure_file("imgui.vert.spv" "shaders/imgui.vert.spv" COPYONLY)
+configure_file("imgui.frag.spv" "shaders/imgui.frag.spv" COPYONLY)
 
 
 function(target_target_add_spirv_shader TARGET INPUT_FILE)
