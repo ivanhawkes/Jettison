@@ -1,6 +1,7 @@
 // glfw/Vulkan
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+
 // glm
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
@@ -9,12 +10,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
+
 // stb
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
 // tiny_obj_loader
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+
 // std
 #include <iostream>
 #include <cstdlib>
@@ -37,10 +41,10 @@
 constexpr uint32_t kWindowWidth = 1920;
 constexpr uint32_t kWindowHeight = 1080;
 
-const std::string MODEL_PATH = "models/viking_room.wobj";
-const std::string TEXTURE_PATH = "textures/viking_room.png";
+const std::string kModelPath = "models/viking_room.wobj";
+const std::string kTexturePath = "textures/viking_room.png";
 
-constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+constexpr int kMaxFramesInFlight = 2;
 
 
 const std::vector<const char*> validationLayers = {
@@ -213,11 +217,9 @@ private:
 		init_info.PhysicalDevice = m_physicalDevice;
 		init_info.Device = m_device;
 
+		// Assume we need to use the graphics queue family.
 		init_info.QueueFamily = m_indicies.graphicsFamily.value();
-		init_info.Queue = m_graphicsQueue; // Other option is the present queue...try that in case of failure.
-
-		//init_info.QueueFamily = m_indicies.presentFamily.value();
-		//init_info.Queue = m_presentQueue; // Other option is the present queue...try that in case of failure.
+		init_info.Queue = m_graphicsQueue;
 
 		init_info.PipelineCache = VK_NULL_HANDLE;
 		init_info.DescriptorPool = m_descriptorPool;
@@ -225,7 +227,50 @@ private:
 		init_info.MinImageCount = m_swapChainImageCount;
 		init_info.ImageCount = m_swapChainImageCount; // wd->ImageCount;
 		init_info.CheckVkResultFn = check_vk_result;
-		//ImGui_ImplVulkan_Init(&init_info, m_renderPass);
+		ImGui_ImplVulkan_Init(&init_info, m_renderPass);
+
+		// Load Fonts
+		// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+		// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+		// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+		// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+		// - Read 'docs/FONTS.md' for more instructions and details.
+		// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+		//io.Fonts->AddFontDefault();
+		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+		//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+		//IM_ASSERT(font != NULL);
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontFromFileTTF("fonts/DroidSans.ttf", 20.0f);
+		io.Fonts->AddFontDefault();
+
+		VkResult err = vkResetCommandPool(m_device, m_commandPool, 0);
+		check_vk_result(err);
+
+		VkCommandBufferBeginInfo begin_info = {};
+		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		err = vkBeginCommandBuffer(m_commandBuffers[0], &begin_info);
+		check_vk_result(err);
+
+		ImGui_ImplVulkan_CreateFontsTexture(m_commandBuffers[0]);
+
+		VkSubmitInfo end_info = {};
+		end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		end_info.commandBufferCount = 1;
+		end_info.pCommandBuffers = &m_commandBuffers[0];
+		err = vkEndCommandBuffer(m_commandBuffers[0]);
+		check_vk_result(err);
+		err = vkQueueSubmit(m_graphicsQueue, 1, &end_info, VK_NULL_HANDLE);
+		check_vk_result(err);
+
+		err = vkDeviceWaitIdle(m_device);
+		check_vk_result(err);
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 
 	void mainLoop()
@@ -233,7 +278,21 @@ private:
 		while (!glfwWindowShouldClose(m_window))
 		{
 			glfwPollEvents();
+
+			// ImGui.
+			ImGui_ImplGlfw_NewFrame();
+			ImGui_ImplVulkan_NewFrame();
+			ImGui::NewFrame();
+
+			// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+			if (show_demo_window)
+				ImGui::ShowDemoWindow(&show_demo_window);
+
 			drawFrame();
+
+			// ImGui.
+			ImGui::Render();
+			//ImGui_ImplVulkan_RenderDrawData(draw_data, fd->CommandBuffer);
 		}
 
 		vkDeviceWaitIdle(m_device);
@@ -257,18 +316,19 @@ private:
 		vkDestroyBuffer(m_device, vertexBuffer, nullptr);
 		vkFreeMemory(m_device, vertexBufferMemory, nullptr);
 
-		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+		for (size_t i = 0; i < kMaxFramesInFlight; ++i)
 		{
 			vkDestroySemaphore(m_device, renderFinishedSemaphores[i], nullptr);
 			vkDestroySemaphore(m_device, imageAvailableSemaphores[i], nullptr);
 			vkDestroyFence(m_device, inFlightFences[i], nullptr);
 		}
 
-		vkDestroyCommandPool(m_device, commandPool, nullptr);
+		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 		vkDestroyDevice(m_device, nullptr);
 		vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 		vkDestroyInstance(m_instance, nullptr);
 
+		// ImGui.
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -750,7 +810,7 @@ private:
 		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
-		if (vkCreateCommandPool(m_device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
+		if (vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create command pool");
 		}
@@ -782,7 +842,7 @@ private:
 		int texWidth;
 		int texHeight;
 		int texChannels;
-		stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		stbi_uc* pixels = stbi_load(kTexturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 		VkDeviceSize imageSize = static_cast<uint64_t>(texWidth) * texHeight * 4;
 
 		if (!pixels)
@@ -857,7 +917,7 @@ private:
 		std::string warn;
 		std::string err;
 
-		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str()))
+		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, kModelPath.c_str()))
 		{
 			throw std::runtime_error(warn + err);
 		}
@@ -963,7 +1023,7 @@ private:
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
-		poolInfo.maxSets = static_cast<uint32_t>(m_swapChainImages.size());
+		poolInfo.maxSets = static_cast<uint32_t>(m_swapChainImages.size() + 100); // ILH: multiplied this by 1000 to test if it stopped the crash, it does.
 
 		if (vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_descriptorPool) != VK_SUCCESS)
 		{
@@ -1021,25 +1081,25 @@ private:
 
 	void createCommandBuffers()
 	{
-		commandBuffers.resize(swapChainFramebuffers.size());
+		m_commandBuffers.resize(swapChainFramebuffers.size());
 
 		VkCommandBufferAllocateInfo allocInfo {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandPool = commandPool;
+		allocInfo.commandPool = m_commandPool;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+		allocInfo.commandBufferCount = static_cast<uint32_t>(m_commandBuffers.size());
 
-		if (vkAllocateCommandBuffers(m_device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
+		if (vkAllocateCommandBuffers(m_device, &allocInfo, m_commandBuffers.data()) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create command buffers");
 		}
 
-		for (size_t i = 0; i < commandBuffers.size(); ++i)
+		for (size_t i = 0; i < m_commandBuffers.size(); ++i)
 		{
 			VkCommandBufferBeginInfo beginInfo {};
 			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-			if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS)
+			if (vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo) != VK_SUCCESS)
 			{
 				throw std::runtime_error("failed to begin recording command buffer");
 			}
@@ -1058,23 +1118,23 @@ private:
 			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 			renderPassInfo.pClearValues = clearValues.data();
 
-			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+			vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+			vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
 			VkBuffer vertexBuffers[] = {vertexBuffer};
 			VkDeviceSize offsets[] = {0};
-			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+			vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-			vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+			vkCmdBindIndexBuffer(m_commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-			vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_descriptorSets[i], 0, nullptr);
+			vkCmdBindDescriptorSets(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_descriptorSets[i], 0, nullptr);
 
-			vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+			vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
-			vkCmdEndRenderPass(commandBuffers[i]);
+			vkCmdEndRenderPass(m_commandBuffers[i]);
 
-			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
+			if (vkEndCommandBuffer(m_commandBuffers[i]) != VK_SUCCESS)
 			{
 				throw std::runtime_error("failed to record command buffer");
 			}
@@ -1083,9 +1143,9 @@ private:
 
 	void createSyncObjects()
 	{
-		imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-		renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-		inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+		imageAvailableSemaphores.resize(kMaxFramesInFlight);
+		renderFinishedSemaphores.resize(kMaxFramesInFlight);
+		inFlightFences.resize(kMaxFramesInFlight);
 		imagesInFlight.resize(m_swapChainImages.size(), VK_NULL_HANDLE);
 
 		VkSemaphoreCreateInfo semaphoreInfo {};
@@ -1095,7 +1155,7 @@ private:
 		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+		for (size_t i = 0; i < kMaxFramesInFlight; ++i)
 		{
 			if (vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS
 				|| vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS
@@ -1142,7 +1202,7 @@ private:
 		submitInfo.pWaitDstStageMask = waitStages;
 
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+		submitInfo.pCommandBuffers = &m_commandBuffers[imageIndex];
 
 		VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
 		submitInfo.signalSemaphoreCount = 1;
@@ -1177,7 +1237,7 @@ private:
 			throw std::runtime_error("failed to present swap chain image");
 		}
 
-		currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+		currentFrame = (currentFrame + 1) % kMaxFramesInFlight;
 	}
 
 	void updateUniformBuffer(uint32_t currentImage)
@@ -1244,7 +1304,7 @@ private:
 			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 		}
 
-		vkFreeCommandBuffers(m_device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+		vkFreeCommandBuffers(m_device, m_commandPool, static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
 
 		vkDestroyPipeline(m_device, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, pipelineLayout, nullptr);
@@ -1707,7 +1767,7 @@ private:
 		VkCommandBufferAllocateInfo allocInfo {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = commandPool;
+		allocInfo.commandPool = m_commandPool;
 		allocInfo.commandBufferCount = 1;
 
 		VkCommandBuffer commandBuffer;
@@ -1734,7 +1794,7 @@ private:
 		vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 		vkQueueWaitIdle(m_graphicsQueue);
 
-		vkFreeCommandBuffers(m_device, commandPool, 1, &commandBuffer);
+		vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
 	}
 
 	void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples,
@@ -1877,7 +1937,7 @@ private:
 	VkInstance m_instance = VK_NULL_HANDLE;
 	VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
 	VkDevice m_device = VK_NULL_HANDLE;
-	
+
 	VkQueue m_graphicsQueue = VK_NULL_HANDLE;
 	VkQueue m_presentQueue = VK_NULL_HANDLE;
 	VkSurfaceKHR m_surface = VK_NULL_HANDLE;
@@ -1895,8 +1955,8 @@ private:
 	VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 	VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 	std::vector<VkFramebuffer> swapChainFramebuffers = {};
-	VkCommandPool commandPool = VK_NULL_HANDLE;
-	std::vector<VkCommandBuffer> commandBuffers = {};
+	VkCommandPool m_commandPool = VK_NULL_HANDLE;
+	std::vector<VkCommandBuffer> m_commandBuffers = {};
 
 	std::vector<VkSemaphore> imageAvailableSemaphores = {};
 	std::vector<VkSemaphore> renderFinishedSemaphores = {};
@@ -1933,6 +1993,8 @@ private:
 	VkImage colorImage = VK_NULL_HANDLE;
 	VkDeviceMemory colorImageMemory = nullptr;
 	VkImageView colorImageView = VK_NULL_HANDLE;
+
+	bool show_demo_window = true;
 };
 
 

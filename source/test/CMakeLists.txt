@@ -19,14 +19,27 @@ target_link_libraries(test PRIVATE Vulkan::Vulkan)
 include_directories("external/entt/src")
 include_directories("external/imgui")
 
-# Copy shaders, models and the textures.
-configure_file("shaders/shader.vert.spv" "shaders/shader.vert.spv" COPYONLY)
-configure_file("shaders/shader.frag.spv" "shaders/shader.frag.spv" COPYONLY)
-configure_file("shaders/imgui.vert.spv" "shaders/imgui.vert.spv" COPYONLY)
-configure_file("shaders/imgui.frag.spv" "shaders/imgui.frag.spv" COPYONLY)
+# Copy shaders, models, textures and fonts.
 configure_file("textures/texture.jpg" "textures/texture.jpg" COPYONLY)
 configure_file("textures/viking_room.png" "textures/viking_room.png" COPYONLY)
+
 configure_file("models/viking_room.wobj" "models/viking_room.wobj" COPYONLY)
+
+configure_file("../shaders/shader.vert.spv" "shaders/shader.vert.spv" COPYONLY)
+configure_file("../shaders/shader.frag.spv" "shaders/shader.frag.spv" COPYONLY)
+configure_file("../shaders/imgui.vert.spv" "shaders/imgui.vert.spv" COPYONLY)
+configure_file("../shaders/imgui.frag.spv" "shaders/imgui.frag.spv" COPYONLY)
+configure_file("../fonts/Cousine-Regular.ttf" "fonts/Cousine-Regular.ttf" COPYONLY)
+configure_file("../fonts/DroidSans.ttf" "fonts/DroidSans.ttf" COPYONLY)
+configure_file("../fonts/Hack-Bold.ttf" "fonts/Hack-Bold.ttf" COPYONLY)
+configure_file("../fonts/Hack-BoldItalic.ttf" "fonts/Hack-BoldItalic.ttf" COPYONLY)
+configure_file("../fonts/Hack-Italic.ttf" "fonts/Hack-Italic.ttf" COPYONLY)
+configure_file("../fonts/Hack-Regular.ttf" "fonts/Hack-Regular.ttf" COPYONLY)
+configure_file("../fonts/Karla-Regular.ttf" "fonts/Karla-Regular.ttf" COPYONLY)
+configure_file("../fonts/ProggyClean.ttf" "fonts/ProggyClean.ttf" COPYONLY)
+configure_file("../fonts/ProggyTiny.ttf" "fonts/ProggyTiny.ttf" COPYONLY)
+configure_file("../fonts/Roboto-Medium.ttf" "fonts/Roboto-Medium.ttf" COPYONLY)
+configure_file("../fonts/VeraMono.ttf" "fonts/VeraMono.ttf" COPYONLY)
 
 # GL math library.
 target_link_libraries(test PRIVATE glm)
