@@ -206,28 +206,36 @@ private:
 	void InitImGui()
 	{
 		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+
+		// IO Flags.
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//io.ConfigViewportsNoAutoMerge = true;
+		//io.ConfigViewportsNoTaskBarIcon = true;
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
 
-		// Setup Platform/Renderer bindings
+		// Init GLF.
 		ImGui_ImplGlfw_InitForVulkan(m_window, true);
+
+		// Init Vulkan.
 		ImGui_ImplVulkan_InitInfo init_info = {};
 		init_info.Instance = m_instance;
 		init_info.PhysicalDevice = m_physicalDevice;
 		init_info.Device = m_device;
-
-		// Assume we need to use the graphics queue family.
 		init_info.QueueFamily = m_indicies.graphicsFamily.value();
 		init_info.Queue = m_graphicsQueue;
-
 		init_info.PipelineCache = VK_NULL_HANDLE;
 		init_info.DescriptorPool = m_descriptorPool;
 		init_info.Allocator = nullptr;
 		init_info.MinImageCount = m_swapChainImageCount;
 		init_info.ImageCount = m_swapChainImageCount; // wd->ImageCount;
 		init_info.CheckVkResultFn = check_vk_result;
-		ImGui_ImplVulkan_Init(&init_info, m_renderPass);
+		ImGui_ImplVulkan_Init(&init_info, m_renderPass); // FIXME: Need custom render pass for ImGui.
 
 		// Load Fonts
 		// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -244,7 +252,6 @@ private:
 		//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 		//IM_ASSERT(font != NULL);
 
-		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->AddFontFromFileTTF("fonts/DroidSans.ttf", 20.0f);
 		io.Fonts->AddFontDefault();
 
@@ -280,19 +287,20 @@ private:
 			glfwPollEvents();
 
 			// ImGui.
-			ImGui_ImplGlfw_NewFrame();
 			ImGui_ImplVulkan_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
 			// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-			if (show_demo_window)
-				ImGui::ShowDemoWindow(&show_demo_window);
+			//if (show_demo_window)
+			//	ImGui::ShowDemoWindow(&show_demo_window);
 
 			drawFrame();
 
 			// ImGui.
 			ImGui::Render();
-			//ImGui_ImplVulkan_RenderDrawData(draw_data, fd->CommandBuffer);
+			//ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), fd->CommandBuffer);
+			// BLOG: said we need to end the command buffer (vkCmdEndRenderPass, vkEndCommandBuffer) - check code, see what's needed.
 		}
 
 		vkDeviceWaitIdle(m_device);
@@ -1287,6 +1295,11 @@ private:
 		createDescriptorPool();
 		createDescriptorSets();
 		createCommandBuffers();
+
+		// TODO: Need to handle the swap chain for ImGui.
+		// Not sure if it's handled in NewFrame already - need to check this.
+		// ImGui_ImplVulkan_SetMinImageCount
+		// ImGui_ImplVulkanH_CreateWindow
 	}
 
 	void cleanupSwapChain()

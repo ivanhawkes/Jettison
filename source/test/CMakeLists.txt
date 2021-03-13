@@ -55,3 +55,6 @@ target_link_libraries(test PRIVATE tiny_obj_loader)
 
 # ImGUI
 add_subdirectory("imgui")
+
+# Renderer.
+add_subdirectory("${CMAKE_SOURCE_DIR}/renderer" build)

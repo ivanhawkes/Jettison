@@ -1,4 +1,4 @@
-target_sources(test PUBLIC
+target_sources(test PRIVATE
 	# ImGUI's implementations.
 	imgui_impl_glfw.cpp
 	imgui_impl_glfw.h
