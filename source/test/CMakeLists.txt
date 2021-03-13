@@ -16,8 +16,8 @@ set_property(TARGET test PROPERTY FOLDER "Test")
 find_package(Vulkan REQUIRED)
 target_link_libraries(test PRIVATE Vulkan::Vulkan)
 
-include_directories("external/entt/src")
-include_directories("external/imgui")
+include_directories("${CMAKE_SOURCE_DIR}/external/entt/src")
+include_directories("${CMAKE_SOURCE_DIR}/external/imgui")
 
 # Copy shaders, models, textures and fonts.
 configure_file("textures/texture.jpg" "textures/texture.jpg" COPYONLY)
@@ -41,20 +41,8 @@ configure_file("../fonts/ProggyTiny.ttf" "fonts/ProggyTiny.ttf" COPYONLY)
 configure_file("../fonts/Roboto-Medium.ttf" "fonts/Roboto-Medium.ttf" COPYONLY)
 configure_file("../fonts/VeraMono.ttf" "fonts/VeraMono.ttf" COPYONLY)
 
-# GL math library.
-target_link_libraries(test PRIVATE glm)
-
-# GLFW.
-target_link_libraries(test PRIVATE glfw)
-
-# STB.
-target_link_libraries(test PRIVATE stb)
-
-# Tiny Object Loader.
-target_link_libraries(test PRIVATE tiny_obj_loader)
-
-# ImGUI
-add_subdirectory("imgui")
-
 # Renderer.
 add_subdirectory("${CMAKE_SOURCE_DIR}/renderer" build)
+
+# 
+include_directories("${CMAKE_SOURCE_DIR}/renderer")
