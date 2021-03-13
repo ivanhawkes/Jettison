@@ -2,24 +2,24 @@
 
 // glfw/Vulkan
 #define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include <../glfw/include/GLFW/glfw3.h>
 
 // glm
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/hash.hpp>
+#include <../glm/glm/glm.hpp>
+#include <../glm/glm/gtc/matrix_transform.hpp>
+#include <../glm/glm/gtx/hash.hpp>
 
 // stb
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <../stb/include/stb_image.h>
 
 // tiny_obj_loader
 #define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
+#include <../tiny_obj_loader/include/tiny_obj_loader.h>
 
 // std
 #include <iostream>

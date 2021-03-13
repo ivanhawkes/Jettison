@@ -15,13 +15,13 @@ target_link_libraries(Renderer PUBLIC Vulkan::Vulkan)
 target_link_libraries(Renderer PUBLIC glm)
 
 # GLFW.
-#target_link_libraries(Renderer PUBLIC glfw)
+target_link_libraries(Renderer PUBLIC glfw)
 
 # GLFW.
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/glfw")
+#set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+#set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+#set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+#add_subdirectory("${CMAKE_SOURCE_DIR}/external/glfw")
 
 
 # STB.

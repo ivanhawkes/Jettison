@@ -42,7 +42,7 @@ endif()
 message(STATUS "Submodule update completed.")
 
 # External projects.
-add_subdirectory("external")
+#add_subdirectory("external")
 
 # Sandbox editor.
 add_subdirectory("flotsam")

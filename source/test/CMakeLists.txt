@@ -41,8 +41,11 @@ configure_file("../fonts/ProggyTiny.ttf" "fonts/ProggyTiny.ttf" COPYONLY)
 configure_file("../fonts/Roboto-Medium.ttf" "fonts/Roboto-Medium.ttf" COPYONLY)
 configure_file("../fonts/VeraMono.ttf" "fonts/VeraMono.ttf" COPYONLY)
 
+# External projects.
+add_subdirectory("${CMAKE_SOURCE_DIR}/external" external)
+
 # Renderer.
-add_subdirectory("${CMAKE_SOURCE_DIR}/renderer" build)
+add_subdirectory("${CMAKE_SOURCE_DIR}/renderer" renderer)
 
 # 
 include_directories("${CMAKE_SOURCE_DIR}/renderer")
