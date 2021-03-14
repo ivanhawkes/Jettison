@@ -9,27 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(Renderer SHARED)
 set_property(TARGET Renderer PROPERTY FOLDER "Renderer")
 
-target_link_libraries(Renderer PUBLIC Vulkan::Vulkan)
-
-# GL math library.
-target_link_libraries(Renderer PUBLIC glm)
-
-# GLFW.
-target_link_libraries(Renderer PUBLIC glfw)
-
-# GLFW.
-#set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-#set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-#set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-#add_subdirectory("${CMAKE_SOURCE_DIR}/external/glfw")
-
-
-# STB.
-target_link_libraries(Renderer PUBLIC stb)
-
-# Tiny Object Loader.
-target_link_libraries(Renderer PUBLIC tiny_obj_loader)
-
+target_link_libraries(Renderer PUBLIC Vulkan::Vulkan glm glfw stb tiny_obj_loader)
 
 target_sources(Renderer PUBLIC
     # Interface.

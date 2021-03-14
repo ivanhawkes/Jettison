@@ -5,7 +5,8 @@
 
 
 int main() {
-	Jettison::Renderer::HelloWorldApp app;
+	// Jettison::Renderer::
+	RenderApp app;
 
 	try
 	{
