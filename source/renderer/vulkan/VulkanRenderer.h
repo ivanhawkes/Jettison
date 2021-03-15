@@ -12,7 +12,6 @@
 #include <../glm/glm/gtx/hash.hpp>
 
 #include <array>
-#include <optional>
 
 #include "VulkanDevice.h"
 
@@ -86,26 +85,6 @@ template<> struct hash<Jettison::Renderer::Vertex>
 
 namespace Jettison::Renderer
 {
-struct QueueFamilyIndices
-{
-	std::optional<uint32_t> graphicsFamily;
-	std::optional<uint32_t> presentFamily;
-
-	bool isComplete()
-	{
-		return graphicsFamily.has_value() && presentFamily.has_value();
-	}
-};
-
-
-struct SwapChainSupportDetails
-{
-	VkSurfaceCapabilitiesKHR capabilities = {};
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentModes;
-};
-
-
 struct UniformBufferObject
 {
 	alignas(16) glm::mat4 model;
@@ -136,12 +115,6 @@ private:
 	void MainLoop();
 
 	void Cleanup();
-
-	void CreateSurface();
-
-	void PickPhysicalDevice();
-
-	void CreateLogicalDevice();
 
 	void CreateSwapChain();
 
@@ -199,16 +172,6 @@ private:
 
 	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-	bool IsDeviceSuitable(VkPhysicalDevice m_device);
-
-	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice m_device);
-
-	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice m_device);
-
-	bool CheckValidationLayerSupport();
-
-	bool CheckDeviceExtensionSupport(VkPhysicalDevice m_device);
-
 	uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
@@ -246,17 +209,10 @@ private:
 	// Vulkan device.
 	VulkanDevice m_vulkanDevice {};
 
-	// member variables
 	GLFWwindow* m_window {nullptr};
-	VkPhysicalDevice m_physicalDevice {VK_NULL_HANDLE};
-	VkDevice m_device {VK_NULL_HANDLE};
-
-	VkQueue m_graphicsQueue {VK_NULL_HANDLE};
-	VkQueue m_presentQueue {VK_NULL_HANDLE};
-	VkSurfaceKHR m_surface {VK_NULL_HANDLE};
-	QueueFamilyIndices m_indicies;
 
 	VkSwapchainKHR m_swapChain {VK_NULL_HANDLE};
+
 	std::vector<VkImage> m_swapChainImages {};
 	VkFormat m_swapChainImageFormat;
 	VkExtent2D m_swapChainExtent;
