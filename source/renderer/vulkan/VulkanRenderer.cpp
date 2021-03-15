@@ -37,12 +37,12 @@ const std::string kTexturePath = "textures/viking_room.png";
 
 constexpr int kMaxFramesInFlight = 2;
 
-const std::vector<const char*> validationLayers = {
-	"VK_LAYER_KHRONOS_validation"
-};
-
 const std::vector<const char*> deviceExtensions = {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+const std::vector<const char*> validationLayers = {
+	"VK_LAYER_KHRONOS_validation"
 };
 
 #ifdef NDEBUG
@@ -77,10 +77,11 @@ void RenderApp::InitWindow()
 
 void RenderApp::InitVulkan()
 {
-	CreateInstance();
+	m_vulkanDevice.CreateInstance();
 	CreateSurface();
 	PickPhysicalDevice();
 	CreateLogicalDevice();
+
 	CreateSwapChain();
 	CreateImageViews();
 	CreateRenderPass();
@@ -100,6 +101,7 @@ void RenderApp::InitVulkan()
 	CreateDescriptorPool();
 	CreateDescriptorSets();
 	CreateCommandBuffers();
+
 	CreateSyncObjects();
 }
 
@@ -148,8 +150,8 @@ void RenderApp::Cleanup()
 
 	vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 	vkDestroyDevice(m_device, nullptr);
-	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
-	vkDestroyInstance(m_instance, nullptr);
+	vkDestroySurfaceKHR(m_vulkanDevice.GetInstance(), m_surface, nullptr);
+	vkDestroyInstance(m_vulkanDevice.GetInstance(), nullptr);
 
 	// TODO: ImGui cleanup!
 
@@ -158,55 +160,9 @@ void RenderApp::Cleanup()
 }
 
 
-void RenderApp::CreateInstance()
-{
-	if (kEnableValidationLayers && !CheckValidationLayerSupport())
-	{
-		throw std::runtime_error("validation layers requested, but not available");
-	}
-
-	VkApplicationInfo appInfo {};
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Hello Triangle";
-	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.pEngineName = "No Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.apiVersion = VK_API_VERSION_1_0;
-
-	VkInstanceCreateInfo createInfo {};
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pApplicationInfo = &appInfo;
-
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
-
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	std::vector<const char*> glfwExtensionsVector(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-	createInfo.enabledExtensionCount = glfwExtensionCount;
-	createInfo.ppEnabledExtensionNames = glfwExtensions;
-
-	if (kEnableValidationLayers)
-	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
-	}
-	else
-	{
-		createInfo.enabledLayerCount = 0;
-	}
-
-	if (vkCreateInstance(&createInfo, nullptr, &m_instance) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create m_instance");
-	}
-}
-
-
 void RenderApp::CreateSurface()
 {
-	if (glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surface) != VK_SUCCESS)
+	if (glfwCreateWindowSurface(m_vulkanDevice.GetInstance(), m_window, nullptr, &m_surface) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create m_window m_surface");
 	}
@@ -217,14 +173,14 @@ void RenderApp::PickPhysicalDevice()
 {
 	uint32_t deviceCount = 0;
 
-	vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
+	vkEnumeratePhysicalDevices(m_vulkanDevice.GetInstance(), &deviceCount, nullptr);
 	if (deviceCount == 0)
 	{
 		throw std::runtime_error("failed to find GPUs with Vulkan support");
 	}
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
+	vkEnumeratePhysicalDevices(m_vulkanDevice.GetInstance(), &deviceCount, devices.data());
 
 	for (const auto& m_device : devices)
 	{

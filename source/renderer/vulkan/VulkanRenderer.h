@@ -14,6 +14,8 @@
 #include <array>
 #include <optional>
 
+#include "VulkanDevice.h"
+
 
 // Forward declarations.
 struct GLFWwindow;
@@ -21,7 +23,6 @@ struct GLFWwindow;
 
 namespace Jettison::Renderer
 {
-
 struct Vertex
 {
 	glm::vec3 pos;
@@ -136,8 +137,6 @@ private:
 
 	void Cleanup();
 
-	void CreateInstance();
-
 	void CreateSurface();
 
 	void PickPhysicalDevice();
@@ -244,9 +243,11 @@ private:
 
 	static void FramebufferResizeCallback(GLFWwindow* m_window, int width, int height);
 
+	// Vulkan device.
+	VulkanDevice m_vulkanDevice {};
+
 	// member variables
 	GLFWwindow* m_window {nullptr};
-	VkInstance m_instance {VK_NULL_HANDLE};
 	VkPhysicalDevice m_physicalDevice {VK_NULL_HANDLE};
 	VkDevice m_device {VK_NULL_HANDLE};
 
