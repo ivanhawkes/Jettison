@@ -6,7 +6,7 @@ project("renderer" VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(Renderer SHARED)
+add_library(Renderer STATIC)
 set_property(TARGET Renderer PROPERTY FOLDER "Renderer")
 
 target_link_libraries(Renderer PUBLIC Vulkan::Vulkan glm glfw stb tiny_obj_loader)

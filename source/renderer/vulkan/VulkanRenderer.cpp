@@ -3,19 +3,32 @@
 #include "VulkanRenderer.h"
 
 
-// glfw/Vulkan
+// GLFW / Vulkan.
 #define GLFW_INCLUDE_VULKAN
 #include <../glfw/include/GLFW/glfw3.h>
 
-// stb
+// STB.
 #define STB_IMAGE_IMPLEMENTATION
 #include <../stb/include/stb_image.h>
 
-// tiny_obj_loader
+// Tiny object loader.
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <../tiny_obj_loader/include/tiny_obj_loader.h>
 
+#include <iostream>
+#include <cstdlib>
+#include <stdexcept>
+#include <vector>
+#include <set>
+#include <cstdint>
+#include <algorithm>
+#include <fstream>
+#include <chrono>
+#include <unordered_map>
 
+
+namespace Jettison::Renderer
+{
 void RenderApp::run()
 {
 	initWindow();
@@ -1763,4 +1776,4 @@ void RenderApp::framebufferResizeCallback(GLFWwindow* m_window, int width, int h
 	auto app = reinterpret_cast<RenderApp*>(glfwGetWindowUserPointer(m_window));
 	app->framebufferResized = true;
 }
-
+}

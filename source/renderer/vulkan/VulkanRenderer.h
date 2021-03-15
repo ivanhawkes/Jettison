@@ -11,24 +11,16 @@
 #include <../glm/glm/gtc/matrix_transform.hpp>
 #include <../glm/glm/gtx/hash.hpp>
 
-#include <iostream>
-#include <cstdlib>
-#include <stdexcept>
-#include <vector>
-#include <optional>
-#include <set>
-#include <cstdint>
-#include <algorithm>
-#include <fstream>
 #include <array>
-#include <chrono>
-#include <unordered_map>
+#include <optional>
 
 
 // Forward declarations.
 struct GLFWwindow;
 
 
+namespace Jettison::Renderer
+{
 constexpr uint32_t kWindowWidth = 1920;
 constexpr uint32_t kWindowHeight = 1080;
 
@@ -51,29 +43,6 @@ constexpr bool enableValidationLayers = false;
 #else
 constexpr bool enableValidationLayers = true;
 #endif // NDEBUG
-
-
-//namespace Jettison::Renderer
-//{
-
-struct QueueFamilyIndices
-{
-	::std::optional<uint32_t> graphicsFamily;
-	::std::optional<uint32_t> presentFamily;
-
-	bool isComplete()
-	{
-		return graphicsFamily.has_value() && presentFamily.has_value();
-	}
-};
-
-
-struct SwapChainSupportDetails
-{
-	VkSurfaceCapabilitiesKHR capabilities = {};
-	::std::vector<VkSurfaceFormatKHR> formats;
-	::std::vector<VkPresentModeKHR> presentModes;
-};
 
 
 struct Vertex
@@ -120,13 +89,14 @@ struct Vertex
 		return pos == other.pos && color == other.color && texCoord == other.texCoord;
 	}
 };
+}
 
 
 namespace std
 {
-template<> struct hash<Vertex>
+template<> struct hash<Jettison::Renderer::Vertex>
 {
-	size_t operator()(const Vertex& vertex) const
+	size_t operator()(const Jettison::Renderer::Vertex& vertex) const
 	{
 		return ((hash<glm::vec3>()(vertex.pos) ^
 			(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
@@ -134,6 +104,29 @@ template<> struct hash<Vertex>
 	}
 };
 }
+
+
+namespace Jettison::Renderer
+{
+struct QueueFamilyIndices
+{
+	::std::optional<uint32_t> graphicsFamily;
+	::std::optional<uint32_t> presentFamily;
+
+	bool isComplete()
+	{
+		return graphicsFamily.has_value() && presentFamily.has_value();
+	}
+};
+
+
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities = {};
+	::std::vector<VkSurfaceFormatKHR> formats;
+	::std::vector<VkPresentModeKHR> presentModes;
+};
+
 
 struct UniformBufferObject
 {
@@ -162,9 +155,7 @@ private:
 
 	void initVulkan();
 
-
 	void mainLoop();
-
 
 	void cleanup();
 
@@ -221,7 +212,6 @@ private:
 	void updateUniformBuffer(uint32_t currentImage);
 
 	void recreateSwapChain();
-
 
 	void cleanupSwapChain();
 
@@ -341,6 +331,4 @@ private:
 
 	bool show_demo_window = true;
 };
-
-
-//}
+}
