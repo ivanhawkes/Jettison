@@ -12,6 +12,8 @@
 #include <../glm/glm/gtx/hash.hpp>
 
 #include <array>
+#include <stdio.h>
+#include <string>
 
 #include "VulkanDevice.h"
 

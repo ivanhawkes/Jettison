@@ -1,11 +1,9 @@
-#pragma once
-
 #include "VulkanDevice.h"
 
 // STD.
 #include <vector>
 #include <stdexcept>
-#include <string>
+#include <cstring>
 #include <set>
 
 // GLFW / Vulkan.
