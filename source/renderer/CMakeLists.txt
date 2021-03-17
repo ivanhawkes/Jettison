@@ -48,7 +48,11 @@ target_sources(Renderer PUBLIC
     # Vulkan's implementation.
     vulkan/VulkanDevice.cpp
     vulkan/VulkanDevice.h
+    vulkan/VulkanPipeline.cpp
+    vulkan/VulkanPipeline.h
     vulkan/VulkanRenderer.cpp
     vulkan/VulkanRenderer.h
+    vulkan/VulkanSwapchain.cpp
+    vulkan/VulkanSwapchain.h
     )
 
