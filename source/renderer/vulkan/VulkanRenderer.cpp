@@ -38,19 +38,7 @@ const std::string kTexturePath = "assets/textures/viking_room.png";
 constexpr int kMaxFramesInFlight = 2;
 
 
-void RenderApp::run()
-{
-	InitWindow();
-	InitVulkan();
-	// TODO: InitImGui();
-
-	MainLoop();
-
-	Cleanup();
-}
-
-
-void RenderApp::InitWindow()
+void VulkanRenderer::InitWindow()
 {
 	glfwInit();
 
@@ -61,7 +49,7 @@ void RenderApp::InitWindow()
 }
 
 
-void RenderApp::InitVulkan()
+void VulkanRenderer::InitVulkan()
 {
 	// Device initialisation.
 	m_vulkanDevice.CreateInstance();
@@ -93,24 +81,7 @@ void RenderApp::InitVulkan()
 }
 
 
-void RenderApp::MainLoop()
-{
-	while (!glfwWindowShouldClose(m_window))
-	{
-		glfwPollEvents();
-
-		// TODO: ImGui before.
-
-		DrawFrame();
-
-		// TODO: ImGui after.
-	}
-
-	vkDeviceWaitIdle(m_vulkanDevice.GetDevice());
-}
-
-
-void RenderApp::Cleanup()
+void VulkanRenderer::Cleanup()
 {
 	CleanupSwapChain();
 
@@ -147,7 +118,7 @@ void RenderApp::Cleanup()
 }
 
 
-void RenderApp::CreateSwapChain()
+void VulkanRenderer::CreateSwapChain()
 {
 	SwapChainSupportDetails swapChainSupport = m_vulkanDevice.QuerySwapChainSupport(m_vulkanDevice.GetPhysicalDevice());
 
@@ -210,7 +181,7 @@ void RenderApp::CreateSwapChain()
 }
 
 
-void RenderApp::CreateImageViews()
+void VulkanRenderer::CreateImageViews()
 {
 	m_swapChainImageViews.resize(m_swapChainImages.size());
 
@@ -221,7 +192,7 @@ void RenderApp::CreateImageViews()
 }
 
 
-void RenderApp::CreateRenderPass()
+void VulkanRenderer::CreateRenderPass()
 {
 	VkAttachmentDescription colorAttachment {};
 	colorAttachment.format = m_swapChainImageFormat;
@@ -297,7 +268,7 @@ void RenderApp::CreateRenderPass()
 }
 
 
-void RenderApp::CreateDescriptorSetLayout()
+void VulkanRenderer::CreateDescriptorSetLayout()
 {
 	VkDescriptorSetLayoutBinding uboLayoutBinding {};
 	uboLayoutBinding.binding = 0;
@@ -324,7 +295,7 @@ void RenderApp::CreateDescriptorSetLayout()
 }
 
 
-void RenderApp::CreateGraphicsPipeline()
+void VulkanRenderer::CreateGraphicsPipeline()
 {
 	auto vertShaderCode = ReadFile("assets/shaders/shader.vert.spv");
 	auto fragShaderCode = ReadFile("assets/shaders/shader.frag.spv");
@@ -455,7 +426,7 @@ void RenderApp::CreateGraphicsPipeline()
 }
 
 
-void RenderApp::CreateFramebuffers()
+void VulkanRenderer::CreateFramebuffers()
 {
 	m_swapChainFramebuffers.resize(m_swapChainImageViews.size());
 
@@ -484,7 +455,7 @@ void RenderApp::CreateFramebuffers()
 }
 
 
-void RenderApp::CreateCommandPool()
+void VulkanRenderer::CreateCommandPool()
 {
 	QueueFamilyIndices queueFamilyIndices = m_vulkanDevice.FindQueueFamilies(m_vulkanDevice.GetPhysicalDevice());
 
@@ -499,7 +470,7 @@ void RenderApp::CreateCommandPool()
 }
 
 
-void RenderApp::CreateColorResources()
+void VulkanRenderer::CreateColorResources()
 {
 	VkFormat colorFormat = m_swapChainImageFormat;
 
@@ -511,7 +482,7 @@ void RenderApp::CreateColorResources()
 }
 
 
-void RenderApp::CreateDepthResources()
+void VulkanRenderer::CreateDepthResources()
 {
 	VkFormat depthFormat = FindDepthFormat();
 
@@ -522,7 +493,7 @@ void RenderApp::CreateDepthResources()
 }
 
 
-void RenderApp::CreateTextureImage()
+void VulkanRenderer::CreateTextureImage()
 {
 	int texWidth;
 	int texHeight;
@@ -564,13 +535,13 @@ void RenderApp::CreateTextureImage()
 }
 
 
-void RenderApp::CreateTextureImageView()
+void VulkanRenderer::CreateTextureImageView()
 {
 	m_textureImageView = CreateImageView(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_mipLevels);
 }
 
 
-void RenderApp::CreateTextureSampler()
+void VulkanRenderer::CreateTextureSampler()
 {
 	VkSamplerCreateInfo samplerInfo {};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -597,7 +568,7 @@ void RenderApp::CreateTextureSampler()
 }
 
 
-void RenderApp::LoadModel()
+void VulkanRenderer::LoadModel()
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -645,7 +616,7 @@ void RenderApp::LoadModel()
 }
 
 
-void RenderApp::CreateVertexBuffer()
+void VulkanRenderer::CreateVertexBuffer()
 {
 	VkDeviceSize bufferSize = static_cast<VkDeviceSize>(sizeof(m_vertices[0])) * m_vertices.size();
 
@@ -667,7 +638,7 @@ void RenderApp::CreateVertexBuffer()
 }
 
 
-void RenderApp::CreateIndexBuffer()
+void VulkanRenderer::CreateIndexBuffer()
 {
 	VkDeviceSize bufferSize = static_cast<VkDeviceSize>(sizeof(m_indices[0])) * m_indices.size();
 
@@ -689,7 +660,7 @@ void RenderApp::CreateIndexBuffer()
 }
 
 
-void RenderApp::CreateUniformBuffers()
+void VulkanRenderer::CreateUniformBuffers()
 {
 	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
@@ -703,7 +674,7 @@ void RenderApp::CreateUniformBuffers()
 }
 
 
-void RenderApp::CreateDescriptorPool()
+void VulkanRenderer::CreateDescriptorPool()
 {
 	std::array<VkDescriptorPoolSize, 2> poolSizes {};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -724,7 +695,7 @@ void RenderApp::CreateDescriptorPool()
 }
 
 
-void RenderApp::CreateDescriptorSets()
+void VulkanRenderer::CreateDescriptorSets()
 {
 	std::vector<VkDescriptorSetLayout> layouts(m_swapChainImages.size(), m_descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo {};
@@ -773,7 +744,7 @@ void RenderApp::CreateDescriptorSets()
 }
 
 
-void RenderApp::CreateCommandBuffers()
+void VulkanRenderer::CreateCommandBuffers()
 {
 	m_commandBuffers.resize(m_swapChainFramebuffers.size());
 
@@ -836,7 +807,7 @@ void RenderApp::CreateCommandBuffers()
 }
 
 
-void RenderApp::CreateSyncObjects()
+void VulkanRenderer::CreateSyncObjects()
 {
 	m_imageAvailableSemaphores.resize(kMaxFramesInFlight);
 	m_renderFinishedSemaphores.resize(kMaxFramesInFlight);
@@ -862,7 +833,7 @@ void RenderApp::CreateSyncObjects()
 }
 
 
-void RenderApp::DrawFrame()
+void VulkanRenderer::DrawFrame()
 {
 	vkWaitForFences(m_vulkanDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -937,7 +908,7 @@ void RenderApp::DrawFrame()
 }
 
 
-void RenderApp::UpdateUniformBuffer(uint32_t currentImage)
+void VulkanRenderer::UpdateUniformBuffer(uint32_t currentImage)
 {
 	static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -959,7 +930,7 @@ void RenderApp::UpdateUniformBuffer(uint32_t currentImage)
 }
 
 
-void RenderApp::RecreateSwapChain()
+void VulkanRenderer::RecreateSwapChain()
 {
 	int width = 0;
 	int height = 0;
@@ -988,7 +959,7 @@ void RenderApp::RecreateSwapChain()
 }
 
 
-void RenderApp::CleanupSwapChain()
+void VulkanRenderer::CleanupSwapChain()
 {
 	vkDestroyImageView(m_vulkanDevice.GetDevice(), m_colorImageView, nullptr);
 	vkDestroyImage(m_vulkanDevice.GetDevice(), m_colorImage, nullptr);
@@ -1026,7 +997,7 @@ void RenderApp::CleanupSwapChain()
 }
 
 
-VkShaderModule RenderApp::CreateShaderModule(const std::vector<char>& code)
+VkShaderModule VulkanRenderer::CreateShaderModule(const std::vector<char>& code)
 {
 	VkShaderModuleCreateInfo createInfo {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -1043,7 +1014,7 @@ VkShaderModule RenderApp::CreateShaderModule(const std::vector<char>& code)
 }
 
 
-VkSurfaceFormatKHR RenderApp::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR VulkanRenderer::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
 	for (const auto& availableFormat : availableFormats)
 	{
@@ -1057,7 +1028,7 @@ VkSurfaceFormatKHR RenderApp::ChooseSwapSurfaceFormat(const std::vector<VkSurfac
 }
 
 
-VkPresentModeKHR RenderApp::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+VkPresentModeKHR VulkanRenderer::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 {
 	for (const VkPresentModeKHR& availablePresentMode : availablePresentModes)
 	{
@@ -1071,7 +1042,7 @@ VkPresentModeKHR RenderApp::ChooseSwapPresentMode(const std::vector<VkPresentMod
 }
 
 
-VkExtent2D RenderApp::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+VkExtent2D VulkanRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
 	if (capabilities.currentExtent.width != UINT32_MAX)
 	{
@@ -1096,7 +1067,7 @@ VkExtent2D RenderApp::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 }
 
 
-uint32_t RenderApp::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t VulkanRenderer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(m_vulkanDevice.GetPhysicalDevice(), &memProperties);
@@ -1113,7 +1084,7 @@ uint32_t RenderApp::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pr
 }
 
 
-void RenderApp::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+void VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	VkBufferCreateInfo bufferInfo {};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1143,7 +1114,7 @@ void RenderApp::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
 }
 
 
-void RenderApp::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+void VulkanRenderer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -1155,7 +1126,7 @@ void RenderApp::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize 
 }
 
 
-void RenderApp::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
+void VulkanRenderer::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(m_vulkanDevice.GetPhysicalDevice(), imageFormat, &formatProperties);
@@ -1253,7 +1224,7 @@ void RenderApp::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t tex
 }
 
 
-void RenderApp::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
+void VulkanRenderer::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
 {
 	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -1307,7 +1278,7 @@ void RenderApp::TransitionImageLayout(VkImage image, VkFormat format, VkImageLay
 }
 
 
-void RenderApp::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+void VulkanRenderer::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
 	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -1341,7 +1312,7 @@ void RenderApp::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width
 }
 
 
-VkCommandBuffer RenderApp::BeginSingleTimeCommands()
+VkCommandBuffer VulkanRenderer::BeginSingleTimeCommands()
 {
 	VkCommandBufferAllocateInfo allocInfo {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -1362,7 +1333,7 @@ VkCommandBuffer RenderApp::BeginSingleTimeCommands()
 }
 
 
-void RenderApp::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
+void VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
 	vkEndCommandBuffer(commandBuffer);
 
@@ -1378,7 +1349,7 @@ void RenderApp::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 }
 
 
-void RenderApp::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
+void VulkanRenderer::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
 {
 	VkImageCreateInfo imageInfo {};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -1415,7 +1386,7 @@ void RenderApp::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels,
 }
 
 
-VkImageView RenderApp::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+VkImageView VulkanRenderer::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
 {
 	VkImageViewCreateInfo viewInfo {};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -1437,7 +1408,7 @@ VkImageView RenderApp::CreateImageView(VkImage image, VkFormat format, VkImageAs
 }
 
 
-VkFormat RenderApp::FindDepthFormat()
+VkFormat VulkanRenderer::FindDepthFormat()
 {
 	return FindSupportedFormat(
 		{VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
@@ -1447,13 +1418,13 @@ VkFormat RenderApp::FindDepthFormat()
 }
 
 
-bool RenderApp::HasStencilComponent(VkFormat format)
+bool VulkanRenderer::HasStencilComponent(VkFormat format)
 {
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
 
-VkFormat RenderApp::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+VkFormat VulkanRenderer::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 {
 	for (VkFormat format : candidates)
 	{
@@ -1473,7 +1444,7 @@ VkFormat RenderApp::FindSupportedFormat(const std::vector<VkFormat>& candidates,
 }
 
 
-VkSampleCountFlagBits RenderApp::GetMaxUsableSampleCount()
+VkSampleCountFlagBits VulkanRenderer::GetMaxUsableSampleCount()
 {
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 	vkGetPhysicalDeviceProperties(m_vulkanDevice.GetPhysicalDevice(), &physicalDeviceProperties);
@@ -1490,7 +1461,7 @@ VkSampleCountFlagBits RenderApp::GetMaxUsableSampleCount()
 }
 
 
-std::vector<char> RenderApp::ReadFile(const std::string& filename)
+std::vector<char> VulkanRenderer::ReadFile(const std::string& filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -1511,9 +1482,9 @@ std::vector<char> RenderApp::ReadFile(const std::string& filename)
 }
 
 
-void RenderApp::FramebufferResizeCallback(GLFWwindow* m_window, int width, int height)
+void VulkanRenderer::FramebufferResizeCallback(GLFWwindow* m_window, int width, int height)
 {
-	auto app = reinterpret_cast<RenderApp*>(glfwGetWindowUserPointer(m_window));
+	auto app = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(m_window));
 	app->m_framebufferResized = true;
 }
 }

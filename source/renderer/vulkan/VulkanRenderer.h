@@ -103,19 +103,20 @@ static void check_vk_result(VkResult err)
 }
 
 
-class RenderApp {
+class VulkanRenderer {
 public:
-	void run();
-
 	void DrawFrame();
 
 	void InitWindow();
 
 	void InitVulkan();
 
-	void MainLoop();
-
 	void Cleanup();
+
+	GLFWwindow* GetWindow() const { return m_window; }
+
+	void WaitIdle() { m_vulkanDevice.WaitIdle(); }
+
 
 private:
 	void CreateSwapChain();

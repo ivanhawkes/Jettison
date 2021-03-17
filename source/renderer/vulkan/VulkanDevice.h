@@ -39,6 +39,8 @@ public:
 	void PickPhysicalDevice();
 	void CreateLogicalDevice();
 
+	void WaitIdle() { vkDeviceWaitIdle(m_device); }
+
 	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice m_device);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice m_device);
 	bool IsDeviceSuitable(VkPhysicalDevice m_device);
@@ -64,6 +66,5 @@ private:
 
 	VkQueue m_graphicsQueue {VK_NULL_HANDLE};
 	VkQueue m_presentQueue {VK_NULL_HANDLE};
-
 };
 }
