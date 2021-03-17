@@ -107,7 +107,8 @@ class RenderApp {
 public:
 	void run();
 
-private:
+	void DrawFrame();
+
 	void InitWindow();
 
 	void InitVulkan();
@@ -116,6 +117,7 @@ private:
 
 	void Cleanup();
 
+private:
 	void CreateSwapChain();
 
 	void CreateImageViews();
@@ -155,8 +157,6 @@ private:
 	void CreateCommandBuffers();
 
 	void CreateSyncObjects();
-
-	void DrawFrame();
 
 	void UpdateUniformBuffer(uint32_t currentImage);
 

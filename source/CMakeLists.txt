@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.18)
+cmake_minimum_required (VERSION 3.17)
 
 # Set the overall project name.
 project("Jettison" VERSION 0.1.0.0)
@@ -41,7 +41,7 @@ endif()
 
 message(STATUS "Submodule update completed.")
 
-# External projects.
+# External projects - not sure it makes sense to have them as standalone.
 #add_subdirectory("external")
 
 # Sandbox editor.
@@ -52,6 +52,3 @@ add_subdirectory("jetsam")
 
 # Mucking about.
 add_subdirectory("test")
-
-# Shaders
-add_subdirectory("shaders")

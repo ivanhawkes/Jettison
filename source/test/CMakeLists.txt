@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.18)
+cmake_minimum_required (VERSION 3.17)
 
 # Set the overall project name.
 project("test" VERSION 0.1.0)
@@ -16,41 +16,22 @@ set_property(TARGET test PROPERTY FOLDER "Test")
 find_package(Vulkan REQUIRED)
 target_link_libraries(test PRIVATE Vulkan::Vulkan)
 
-include_directories("${CMAKE_SOURCE_DIR}/external/entt/src")
-include_directories("${CMAKE_SOURCE_DIR}/external/imgui")
-
-# Copy shaders, models, textures and fonts.
-configure_file("textures/texture.jpg" "textures/texture.jpg" COPYONLY)
-configure_file("textures/viking_room.png" "textures/viking_room.png" COPYONLY)
-
-configure_file("models/viking_room.wobj" "models/viking_room.wobj" COPYONLY)
-
-configure_file("../shaders/shader.vert.spv" "shaders/shader.vert.spv" COPYONLY)
-configure_file("../shaders/shader.frag.spv" "shaders/shader.frag.spv" COPYONLY)
-configure_file("../shaders/imgui.vert.spv" "shaders/imgui.vert.spv" COPYONLY)
-configure_file("../shaders/imgui.frag.spv" "shaders/imgui.frag.spv" COPYONLY)
-configure_file("../fonts/Cousine-Regular.ttf" "fonts/Cousine-Regular.ttf" COPYONLY)
-configure_file("../fonts/DroidSans.ttf" "fonts/DroidSans.ttf" COPYONLY)
-configure_file("../fonts/Hack-Bold.ttf" "fonts/Hack-Bold.ttf" COPYONLY)
-configure_file("../fonts/Hack-BoldItalic.ttf" "fonts/Hack-BoldItalic.ttf" COPYONLY)
-configure_file("../fonts/Hack-Italic.ttf" "fonts/Hack-Italic.ttf" COPYONLY)
-configure_file("../fonts/Hack-Regular.ttf" "fonts/Hack-Regular.ttf" COPYONLY)
-configure_file("../fonts/Karla-Regular.ttf" "fonts/Karla-Regular.ttf" COPYONLY)
-configure_file("../fonts/ProggyClean.ttf" "fonts/ProggyClean.ttf" COPYONLY)
-configure_file("../fonts/ProggyTiny.ttf" "fonts/ProggyTiny.ttf" COPYONLY)
-configure_file("../fonts/Roboto-Medium.ttf" "fonts/Roboto-Medium.ttf" COPYONLY)
-configure_file("../fonts/VeraMono.ttf" "fonts/VeraMono.ttf" COPYONLY)
+include_directories("${CMAKE_SOURCE_DIR}/source/external/entt/src")
+include_directories("${CMAKE_SOURCE_DIR}/source/external/imgui")
 
 # External projects.
-add_subdirectory("${CMAKE_SOURCE_DIR}/external" external)
+add_subdirectory("${CMAKE_SOURCE_DIR}/source/external" external)
 
 # Renderer.
-add_subdirectory("${CMAKE_SOURCE_DIR}/renderer" renderer)
+add_subdirectory("${CMAKE_SOURCE_DIR}/source/renderer" renderer)
 
 # 
-include_directories("${CMAKE_SOURCE_DIR}/renderer")
+include_directories("${CMAKE_SOURCE_DIR}/source/renderer")
 
 target_link_libraries(test PUBLIC Renderer)
 
 # TODO: HACK: Need the GLFW DLL file. Not sure how to get it to copy over.
 #    install(FILES "${GLFW_BINARY_DIR}/src/glfw3.dll" DESTINATION "bin")
+
+# Assets.
+add_subdirectory("assets")

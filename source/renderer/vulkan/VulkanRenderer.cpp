@@ -32,8 +32,8 @@ namespace Jettison::Renderer
 constexpr uint32_t kWindowWidth = 1920;
 constexpr uint32_t kWindowHeight = 1080;
 
-const std::string kModelPath = "models/viking_room.wobj";
-const std::string kTexturePath = "textures/viking_room.png";
+const std::string kModelPath = "assets/models/viking_room.wobj";
+const std::string kTexturePath = "assets/textures/viking_room.png";
 
 constexpr int kMaxFramesInFlight = 2;
 
