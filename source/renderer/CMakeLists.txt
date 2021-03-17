@@ -52,6 +52,8 @@ target_sources(Renderer PUBLIC
     vulkan/VulkanPipeline.h
     vulkan/VulkanRenderer.cpp
     vulkan/VulkanRenderer.h
+    vulkan/VulkanRenderPass.cpp
+    vulkan/VulkanRenderPass.h
     vulkan/VulkanSwapchain.cpp
     vulkan/VulkanSwapchain.h
     )

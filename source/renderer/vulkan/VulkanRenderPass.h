@@ -14,12 +14,12 @@
 
 namespace Jettison::Renderer
 {
-class VulkanSwapChain
+class VulkanRenderPass
 {
 public:
 	// Disable copying.
-	VulkanSwapChain() = default;
-	VulkanSwapChain(const VulkanSwapChain&) = delete;
-	VulkanSwapChain& operator=(const VulkanSwapChain&) = delete;
+	VulkanRenderPass() = default;
+	VulkanRenderPass(const VulkanRenderPass&) = delete;
+	VulkanRenderPass& operator=(const VulkanRenderPass&) = delete;
 };
 }

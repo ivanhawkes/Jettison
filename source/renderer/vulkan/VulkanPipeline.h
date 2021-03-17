@@ -14,4 +14,12 @@
 
 namespace Jettison::Renderer
 {
+class VulkanPipeline
+{
+public:
+	// Disable copying.
+	VulkanPipeline() = default;
+	VulkanPipeline(const VulkanPipeline&) = delete;
+	VulkanPipeline& operator=(const VulkanPipeline&) = delete;
+};
 }

@@ -105,6 +105,11 @@ static void check_vk_result(VkResult err)
 
 class VulkanRenderer {
 public:
+	// Disable copying.
+	VulkanRenderer() = default;
+	VulkanRenderer(const VulkanRenderer&) = delete;
+	VulkanRenderer& operator=(const VulkanRenderer&) = delete;
+
 	void DrawFrame();
 
 	void InitWindow();

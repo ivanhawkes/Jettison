@@ -33,6 +33,11 @@ struct SwapChainSupportDetails
 class VulkanDevice
 {
 public:
+	// Disable copying.
+	VulkanDevice() = default;
+	VulkanDevice(const VulkanDevice&) = delete;
+	VulkanDevice& operator=(const VulkanDevice&) = delete;
+
 	void CreateInstance();
 	bool CheckValidationLayerSupport();
 	void CreateSurface(GLFWwindow* window);
