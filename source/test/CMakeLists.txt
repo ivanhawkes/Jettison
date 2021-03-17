@@ -31,7 +31,7 @@ include_directories("${CMAKE_SOURCE_DIR}/source/renderer")
 target_link_libraries(test PUBLIC Renderer)
 
 # TODO: HACK: Need the GLFW DLL file. Not sure how to get it to copy over.
-#    install(FILES "${GLFW_BINARY_DIR}/src/glfw3.dll" DESTINATION "bin")
+install(FILES "${GLFW_BINARY_DIR}/src/glfw3.dll" DESTINATION "bin")
 
 # Assets.
 add_subdirectory("assets")
